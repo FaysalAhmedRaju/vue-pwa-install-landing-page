@@ -1,32 +1,77 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <v-app>
+      <v-banner
+        color="info"
+        dark
+        class="text-left"
+      >
+        Get our free app. It won't take up space on your phone and also works offline!
+        
+        <template v-slot:actions>
+          <v-btn text @click="dismiss">Dismiss</v-btn>
+          <v-btn text @click="install">Install</v-btn>
+        </template>
+      </v-banner>
+
+      <v-banner
+        v-if="deferredPrompt"
+        color="info"
+        dark
+        class="text-left"
+      >
+        Get our free app. It won't take up space on your phone and also works offline!
+        
+        <template v-slot:actions>
+          <v-btn text @click="dismiss">Dismiss</v-btn>
+          <v-btn text @click="install">Install</v-btn>
+        </template>
+      </v-banner>
+<div class="pa-4 text-center">
+        <img alt="Vue logo" src="./assets/logo.png" />
+        <h1>Customize Your Vue.js PWA Installation</h1>
+      </div>
+    </v-app>
   </div>
+
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+console.log("Hello vue js")
 
-#nav {
-  padding: 30px;
-}
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+export default {
+  name: 'App',
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+  data() {
+  return {
+      deferredPrompt: null
+    };
+  },
+   created() {
+   console.log("created function is hitted");
+    window.addEventListener("beforeinstallprompt", e => {
+    console.log('beforeinstallprompt called');
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      this.deferredPrompt = e;
+    });
+window.addEventListener("appinstalled", () => {
+    console.log('appinstalled called');
+      this.deferredPrompt = null;
+    });
+  },
+
+    methods: {
+    async dismiss() {
+    console.log("dismiss function is called");
+      this.deferredPrompt = null;
+    },
+    async install() {
+    console.log("install function is called");
+      this.deferredPrompt.prompt();
+    }
+  }
+
+};
+</script>
